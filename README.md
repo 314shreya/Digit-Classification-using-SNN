@@ -18,8 +18,3 @@ Install dependencies with `pip install -r requirements.txt`
 ```bash
 python3 snn.py
 ```
-
-## Formatting used
-```bash
-black -l 120 *.py
-```
