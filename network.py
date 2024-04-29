@@ -151,23 +151,6 @@ class STDP():
         elif delta_w > 0:
           self.network.input_2_output_connection.weights[:,i] += self.lr * delta_w * (self.w_max - self.network.input_2_output_connection.weights[:,i])
 
-    # def train_step(self, train_data_sample):
-    #     """
-    #     Function to train the network for one training sample using the update function defined above.
-
-    #     Args:
-    #         train_data_sample (list): a sample from the training data
-
-    #     This function is complete. You do not need to do anything here.
-    #     """
-    #     input = train_data_sample[0]
-    #     output = train_data_sample[1]
-    #     for t in self.time:
-    #         if output[t] == 1:
-    #             for i in range(2):
-    #                 for t1 in self.sliding_window:
-    #                     if (0<= t + t1 < self.snn_timesteps) and (t1!=0) and (input[i][t+t1] == 1):
-    #                         self.update_weights(t1, i)
 
     def train_step(self, train_data_sample):
         """
@@ -176,15 +159,15 @@ class STDP():
         Args:
             train_data_sample (list): a sample from the training data
         """
-        input, output = train_data_sample  # Assuming 'output' is similarly a 1D array for a single timestep
+        input, output = train_data_sample
         if len(input) != 200:
             raise ValueError("Input data must be a 1D array of size 200")
 
-        # Process output at t=0 (since you mentioned only one timestep)
-        if output[0] == 1:  # Assuming output is a binary indicator of a spike
-            for i in range(200):  # Go through each neuron
+        # one timestep, output is binary (1 0)
+        if output[0] == 1:
+            for i in range(200):
                 for t1 in self.sliding_window:
-                    t = 0  # Since timestep is 1, we consider only the current timestep '0'
+                    t = 0  # timestep is 1
                     if 0 <= t + t1 < self.snn_timesteps and t1 != 0:  # Check if time shift is within bounds
                         if input[i] == 1:  # Check if there is a spike in the neuron 'i'
                             self.update_weights(t1, i)
@@ -202,47 +185,4 @@ class STDP():
         for ee in range(self.epochs):
             for train_data_sample in training_data:
                 self.train_step(train_data_sample)
-
-
-class Learning:
-    def hebbian(network, train_data, lr=1e-5, epochs=10):
-        """
-        Function to train a network using Hebbian learning rule
-            Args:
-                network (SNN): SNN network object
-                lr (float): learning rate
-                train_data (list): training data
-                epochs (int): number of epochs to train with. Each epoch is defined as one pass over all training samples.
-
-            Write the operations required to compute the weight increment according to the hebbian learning rule. Then increment the network weights.
-        """
-        print("data len: ", len(train_data))
-        #iterate over the epochs
-        for ee in range(epochs):
-            #iterate over all samples in train_data
-            for data in train_data:
-                #compute the firing rate for the input
-                input_data, output_data = data
-
-                print("input data len: ", len(input_data))
-                print("input data: ", input_data)
-                print("output data: ", output_data)
-                print("output data len: ", len(output_data))
-
-                input_firing_rates = input_data
-
-                print("input_firing_rates: ", input_firing_rates)
-
-                #compute the firing rate for the output
-                network_output = network(input_data)
-                output_firing_rates = network_output
-
-                #compute the correlation using the firing rates calculated above
-                correlation_using_firing_rates = np.outer(output_firing_rates, input_firing_rates)
-
-                #compute the weight increment
-                weight_increment = correlation_using_firing_rates * lr
-
-                #increment the weight
-                network.input_2_output_connection.weights += weight_increment
 
